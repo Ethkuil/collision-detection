@@ -1,0 +1,11 @@
+# build artifacts
+Makefile
+compile_commands.json
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+
+.cache/
+
+# IDE settings
+.vscode/
