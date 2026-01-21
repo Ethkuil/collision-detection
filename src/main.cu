@@ -164,7 +164,7 @@ void displayCallback() {
 
     glPopMatrix();
     glutSwapBuffers();
-    glutPostRedisplay()
+    glutPostRedisplay();
 }
 
 void cleanup() {
