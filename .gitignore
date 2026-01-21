@@ -7,5 +7,10 @@ CMakeFiles/
 
 .cache/
 
-# IDE settings
+# IDE VSCode
 .vscode/
+
+# IDE VS
+out/
+.vs/
+CMakePresets.json
