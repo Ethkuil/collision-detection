@@ -4,6 +4,7 @@ compile_commands.json
 *.cmake
 CMakeCache.txt
 CMakeFiles/
+build/
 
 .cache/
 
@@ -13,4 +14,6 @@ CMakeFiles/
 # IDE VS
 out/
 .vs/
-CMakePresets.json
+
+# vcpkg
+vcpkg_installed/
