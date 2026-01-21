@@ -11,9 +11,6 @@
 // 空间大小
 constexpr int SPACE_SIZE = 100;
 
-// 时间步长
-constexpr float TIME_STEP = 0.016f; // 16ms
-
 // 固定小球为白色，物体为红色
 using Color = float3;
 constexpr Color SPHERE_COLOR = {1.0f, 1.0f, 1.0f};
@@ -21,7 +18,6 @@ constexpr Color OBJECT_COLOR = {1.0f, 0.0f, 0.0f};
 // 粒子数量
 constexpr int NUM_SPHERES = 128;
 constexpr int NUM_OBJECTS = 32;
-constexpr int NUM_PARTICLES = NUM_SPHERES + NUM_OBJECTS;
 // 粒子半径范围
 constexpr float MIN_RADIUS = 0.5f;
 constexpr float MAX_RADIUS = 2.0f;
