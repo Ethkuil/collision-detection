@@ -17,6 +17,6 @@ add_executable(collision_detection
 
 target_link_libraries(collision_detection PRIVATE 
     CUDA::cudart
-    OpenGL::OpenGL
+    OpenGL::GL
     GLUT::GLUT
 )
