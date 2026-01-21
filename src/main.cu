@@ -1,4 +1,7 @@
 #include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
 #include <GL/glut.h>
 
@@ -45,6 +48,13 @@ int* d_collisionCount;
 constexpr int MAX_COLLISIONS = 100000;
 constexpr int3 GRID_DIM = {10, 10, 10};
 constexpr float CELL_SIZE = SPACE_SIZE / 10.0f;
+
+// 时间和FPS相关全局变量
+static int g_lastTime = 0;
+static float g_frameTime = 0.016f;
+static int g_frameCount = 0;
+static float g_fps = 0.0f;
+static int g_fpsUpdateTime = 0;
 
 void initializeParticles() {
     // 随机初始化小球和物体的位置等属性
@@ -140,6 +150,36 @@ void drawParticles(const Sphere* spheres, const Object* objects, int numSpheres,
     }
 }
 
+void drawFPS() {
+    // 设置2D投影用于绘制文字
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, 800, 600, 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_DEPTH_TEST);
+    glColor3f(0.0f, 1.0f, 0.0f);
+
+    // 使用GLUT位图字体绘制FPS
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(1) << "FPS: " << g_fps;
+    std::string fpsStr = oss.str();
+
+    glRasterPos2f(10.0f, 30.0f);
+    for (char c : fpsStr) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+}
+
 void simulateStep(Sphere* d_spheres, Object* d_objects, int numSpheres, int numObjects, float timeStep) {
     simulationStep(d_spheres, numSpheres, d_objects, numObjects, timeStep,
                    make_float3(0.0f, 0.0f, 0.0f),
@@ -149,13 +189,29 @@ void simulateStep(Sphere* d_spheres, Object* d_objects, int numSpheres, int numO
 }
 
 void displayCallback() {
+    // 计算实际帧时间
+    int currentTime = glutGet(GLUT_ELAPSED_TIME);
+    if (g_lastTime == 0) {
+        g_lastTime = currentTime;
+    }
+    g_frameTime = (currentTime - g_lastTime) / 1000.0f;
+    g_lastTime = currentTime;
+
+    // 更新FPS计数
+    g_frameCount++;
+    if (currentTime - g_fpsUpdateTime >= 1000) {
+        g_fps = g_frameCount * 1000.0f / (currentTime - g_fpsUpdateTime);
+        g_fpsUpdateTime = currentTime;
+        g_frameCount = 0;
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
 
     drawBackground();
 
     // 模拟一步
-    simulateStep(d_spheres, d_objects, NUM_SPHERES, NUM_OBJECTS, TIME_STEP);
+    simulateStep(d_spheres, d_objects, NUM_SPHERES, NUM_OBJECTS, g_frameTime);
 
     // 绘制粒子
     cudaMemcpy(h_spheres, d_spheres, sizeof(Sphere) * NUM_SPHERES, cudaMemcpyDeviceToHost);
@@ -163,6 +219,9 @@ void displayCallback() {
     drawParticles(h_spheres, h_objects, NUM_SPHERES, NUM_OBJECTS);
 
     glPopMatrix();
+
+    drawFPS();
+
     glutSwapBuffers();
     glutPostRedisplay();
 }
