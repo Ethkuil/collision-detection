@@ -11,11 +11,8 @@ find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 
 add_executable(collision_detection
-    main.cc
-    collision_detection.cu
-    collision_detection.cuh
-    renderer.cc
-    renderer.h
+    main.cu
+    simulation.cu
 )
 
 target_link_libraries(collision_detection PRIVATE 
